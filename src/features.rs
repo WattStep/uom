@@ -121,6 +121,22 @@ macro_rules! std {
     ($($tt:tt)*) => {};
 }
 
+/// Expands the given block of code when `uom` is compiled with the `use_micromath` feature.
+#[doc(hidden)]
+#[macro_export]
+#[cfg(feature = "micromath-support")]
+macro_rules! micromath_support {
+    ($($tt:tt)*) => { $($tt)* };
+}
+
+/// Does not expand the given block of code when `uom` is compiled without the `micromath-support` feature.
+#[doc(hidden)]
+#[macro_export]
+#[cfg(not(feature = "micromath-support"))]
+macro_rules! micromath_support {
+    ($($tt:tt)*) => {};
+}
+
 /// Expands the given block of code when `uom` is compiled with the `test` feature.
 #[doc(hidden)]
 #[macro_export]

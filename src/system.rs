@@ -935,6 +935,78 @@ macro_rules! system {
                             value: self.value.sqrt(),
                         }
                     }}
+
+                    micromath_support! {
+                    /// Raises a quantity to an integer power.
+                    ///
+                    #[cfg_attr(all(feature = "si", feature = "f32"), doc = " ```rust")]
+                    #[cfg_attr(not(all(feature = "si", feature = "f32")), doc = " ```rust,ignore")]
+                    /// # use uom::si::f32::*;
+                    /// # use uom::si::length::meter;
+                    /// use uom::typenum::P2;
+                    ///
+                    /// let a: Area = Length::new::<meter>(3.0).powi(P2::new());
+                    /// ```
+                    ///
+                    /// ## Generic Parameters
+                    /// * `E`: `typenum::Integer` power.
+                    #[must_use = "method returns a new number and does not mutate the original value"]
+                    #[inline(always)]
+                    pub fn powi<E>(
+                        self, _e: E
+                    ) -> Quantity<$quantities<$($crate::typenum::Prod<D::$symbol, E>),+>, U, V>
+                    where
+                        $(D::$symbol: $crate::lib::ops::Mul<E>,
+                        <D::$symbol as $crate::lib::ops::Mul<E>>::Output: $crate::typenum::Integer,)+
+                        D::Kind: $crate::marker::Mul,
+                        E: $crate::typenum::Integer,
+                    {
+                        use micromath::F32Ext;
+                        Quantity {
+                            dimension: $crate::lib::marker::PhantomData,
+                            units: $crate::lib::marker::PhantomData,
+                            value: self.value.powi(E::to_i32()),
+                        }
+                    }
+
+                    /// Takes the square root of a number. Returns `NAN` if `self` is a negative
+                    /// number.
+                    ///
+                    #[cfg_attr(all(feature = "si", feature = "f32"), doc = " ```rust")]
+                    #[cfg_attr(not(all(feature = "si", feature = "f32")), doc = " ```rust,ignore")]
+                    /// # use uom::si::f32::*;
+                    /// # use uom::si::area::square_meter;
+                    /// let l: Length = Area::new::<square_meter>(4.0).sqrt();
+                    /// ```
+                    ///
+                    /// The input type must have dimensions divisible by two:
+                    ///
+                    #[cfg_attr(all(feature = "si", feature = "f32"), doc = " ```rust,compile_fail")]
+                    #[cfg_attr(not(all(feature = "si", feature = "f32")), doc = " ```rust,ignore")]
+                    /// # use uom::si::f32::*;
+                    /// # use uom::si::length::meter;
+                    /// // error[E0271]: type mismatch resolving ...
+                    /// let r = Length::new::<meter>(4.0).sqrt();
+                    /// ```
+                    #[must_use = "method returns a new number and does not mutate the original value"]
+                    #[inline(always)]
+                    pub fn sqrt(
+                        self
+                    ) -> Quantity<
+                        $quantities<$($crate::typenum::PartialQuot<D::$symbol, $crate::typenum::P2>),+>,
+                        U, V>
+                    where
+                        $(D::$symbol: $crate::typenum::PartialDiv<$crate::typenum::P2>,
+                        <D::$symbol as $crate::typenum::PartialDiv<$crate::typenum::P2>>::Output: $crate::typenum::Integer,)+
+                        D::Kind: $crate::marker::Div,
+                    {
+                        use micromath::F32Ext;
+                        Quantity {
+                            dimension: $crate::lib::marker::PhantomData,
+                            units: $crate::lib::marker::PhantomData,
+                            value: self.value.sqrt(),
+                        }
+                    }}
                 }
             }
         }
