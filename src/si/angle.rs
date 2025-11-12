@@ -140,6 +140,20 @@ where
     }
 }
 
+#[cfg(feature = "micromath-support")]
+impl<D, U> crate::si::Quantity<D, U, f32>
+where
+    D: crate::si::Dimension + ?Sized,
+    U: crate::si::Units<f32> + ?Sized,
+{
+    /// Computes the four quadrant arctangent of self (y) and other (x).
+    #[must_use = "method returns a new number and does not mutate the original value"]
+    #[inline(always)]
+    pub fn atan2(self, other: Self) -> Angle<U, f32> {
+        Angle::new::<radian>(self.value.atan2(other.value))
+    }
+}
+
 /// Implementation of various micromath trigonometric functions
 #[cfg(feature = "micromath-support")]
 impl<U> Angle<U, f32>
@@ -153,13 +167,6 @@ where
         self.value.cos().into()
     }
 
-    /// Computes the value of the hyperbolic cosine of the angle.
-    #[must_use = "method returns a new number and does not mutate the original value"]
-    #[inline(always)]
-    pub fn cosh(self) -> Ratio<U, f32> {
-        self.value.cosh().into()
-    }
-
     /// Computes the value of the sine of the angle.
     #[must_use = "method returns a new number and does not mutate the original value"]
     #[inline(always)]
@@ -167,20 +174,6 @@ where
         self.value.sin().into()
     }
 
-    /// Computes the value of the hyperbolic sine of the angle.
-    #[must_use = "method returns a new number and does not mutate the original value"]
-    #[inline(always)]
-    pub fn sinh(self) -> Ratio<U, f32> {
-        self.value.sinh().into()
-    }
-
-    /// Computes the value of both the sine and cosine of the angle.
-    #[must_use = "method returns a new number and does not mutate the original value"]
-    #[inline(always)]
-    pub fn sin_cos(self) -> (Ratio<U, f32>, Ratio<U, f32>) {
-        let (sin, cos) = self.value.sin_cos();
-        (sin.into(), cos.into())
-    }
 
     /// Computes the value of the tangent of the angle.
     #[must_use = "method returns a new number and does not mutate the original value"]
@@ -189,26 +182,6 @@ where
         self.value.tan().into()
     }
 
-    /// Computes the value of the hyperbolic tangent of the angle.
-    #[must_use = "method returns a new number and does not mutate the original value"]
-    #[inline(always)]
-    pub fn tanh(self) -> Ratio<U, f32> {
-        self.value.tanh().into()
-    }
-}
-
-#[cfg(feature = "micromath-support")]
-impl<D, U> crate::si::Quantity<D, U, f32>
-where
-    D: crate::si::Dimension + ?Sized,
-    U: crate::si::Units<f32> + ?Sized,
-{
-    /// Computes the four quadrant arctangent of self (y) and other (x).
-    #[must_use = "method returns a new number and does not mutate the original value"]
-    #[inline(always)]
-    pub fn atan2(self, other: Self) -> Angle<U, f32> {
-        Angle::new::<radian>(self.value.atan2(other.value))
-    }
 }
 
 #[cfg(test)]
@@ -345,14 +318,6 @@ mod tests {
                 //let result = half.tan().into();
                 //assert!(result == V::nan() || result == V::infinity());
 
-                Test::assert_approx_eq(&zero.cosh().into(), &1.0);
-                Test::assert_approx_eq(&nzero.cosh().into(), &1.0);
-
-                Test::assert_approx_eq(&zero.sinh().into(), &0.0);
-                Test::assert_approx_eq(&nzero.sinh().into(), &0.0);
-
-                Test::assert_approx_eq(&zero.tanh().into(), &0.0);
-                Test::assert_approx_eq(&nzero.tanh().into(), &0.0);
             }
 
             quickcheck! {

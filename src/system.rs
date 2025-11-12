@@ -961,6 +961,7 @@ macro_rules! system {
                         D::Kind: $crate::marker::Mul,
                         E: $crate::typenum::Integer,
                     {
+                        use micromath::F32Ext;
                         Quantity {
                             dimension: $crate::lib::marker::PhantomData,
                             units: $crate::lib::marker::PhantomData,
@@ -999,6 +1000,7 @@ macro_rules! system {
                         <D::$symbol as $crate::typenum::PartialDiv<$crate::typenum::P2>>::Output: $crate::typenum::Integer,)+
                         D::Kind: $crate::marker::Div,
                     {
+                        use micromath::F32Ext;
                         Quantity {
                             dimension: $crate::lib::marker::PhantomData,
                             units: $crate::lib::marker::PhantomData,
